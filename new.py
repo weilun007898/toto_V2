@@ -1,10 +1,17 @@
+import re
+import time
 import sys
 import undetected_chromedriver as uc
 from seleniumbase import BaseCase
 import requests
 import xml.etree.ElementTree as ET
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
-# inputtoto= ("D\n#89\n4646#3")
+
+inputtoto= ("D\n#89\n4646#3")
+# Initialize undetected_chromedriver
 
 
 class CustomChrome(uc.Chrome):
@@ -13,7 +20,7 @@ class CustomChrome(uc.Chrome):
         pass
 
 class LoginTest(BaseCase):
-    def test_login(self,):
+    def test_login(self,inputtoto):
         driver = CustomChrome()
         self.driver = driver
 
