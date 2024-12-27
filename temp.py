@@ -4,7 +4,7 @@ import cloudscraper
 scraper = cloudscraper.create_scraper()
 
 # URL to access
-url = "https://wap.mb99.co/wap/default.aspx?code="
+url = "https://chatgpt.com/share/676d1647-58b4-8005-8fe9-3f826aac3afd"
 
 # Make a GET request
 response = scraper.get(url)

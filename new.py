@@ -17,11 +17,12 @@ class LoginTest(BaseCase):
         driver = CustomChrome()
         self.driver = driver
 
+
         # Base URL for the API
         base_url = "http://api.coba8.com"
         endpoint = "/betLogin.aspx"
-        with open("input.txt", "r") as file:
-            self.inputtoto = file.read().strip()
+        # with open("RegionRecognize.txt", "r") as file:
+        #     self.inputtoto = file.read().strip()
 
         # Parameters for the API request
         params = {
@@ -52,7 +53,7 @@ class LoginTest(BaseCase):
         # Perform the test actions
         self.click('div.mmbutt2:contains("Mobile Bet #2")')
         self.wait_for_element_visible('#txtEntry', timeout=10)
-        self.type('#txtEntry', self.inputtoto)
+        self.type('#txtEntry', inputtoto)
         self.wait_for_element_visible('#btnSubmit', timeout=10)
         self.click('#btnSubmit')
 
@@ -64,7 +65,6 @@ class LoginTest(BaseCase):
 
         # Quit the driver explicitly
         driver.quit()
-
 
 
 
