@@ -3,6 +3,7 @@ import subprocess
 import time
 import threading
 import undetected_chromedriver as uc
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -43,26 +44,41 @@ except Exception as e:
     driver.quit()
     exit()
 
-def combine_receipt_lines(lines):
-    """
-    Combines receipt details into a single message for WhatsApp.
-    This function groups lines belonging to the same receipt.
-    """
-    combined_receipts = []
-    current_receipt = []
+def send_sucessful_message(driver, group_name, successful_message):
+    try:
+        # Search for the group
+        group = WebDriverWait(driver, 60).until(
+            EC.presence_of_element_located((By.XPATH, f"//span[@title='{group_name}']"))
+        )
+        group.click()
 
-    for line in lines:
-        line = line.strip()
-        if line.startswith("Receipt:"):  # Start of a new receipt
-            if current_receipt:  # If there are accumulated lines, save them
-                combined_receipts.append("\n".join(current_receipt))
-                current_receipt = []  # Reset for new receipt
-        current_receipt.append(line)  # Add current line to the receipt
+        # Locate the message input box
+        chat_box = WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "div[contenteditable='true'][data-tab='10']"))
+        )
+        chat_box.click()
+        parts = successful_message.split('\n')
 
-    if current_receipt:  # Add the last receipt if there are leftover lines
-        combined_receipts.append("\n".join(current_receipt))
+        for i, part in enumerate(parts):
+            chat_box.send_keys(part)
+            if i < len(parts) - 1:
+                # Insert a newline without sending the message
+                chat_box.send_keys(Keys.SHIFT, Keys.ENTER)
+                # Alternatively:
+                # chat_box.send_keys(Keys.SHIFT + Keys.ENTER)
+                time.sleep(0.1)
+        # chat_box.send_keys(successful_message)
 
-    return combined_receipts
+
+        # Locate and click the send button
+        send_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//button[@aria-label="Send"]'))
+        )
+        send_button.click()
+        print(f"Successful message sent to group: {group_name}")
+    except Exception as e:
+        print(f"Error sending message: {e}")
+
 
 
 def send_error_message(driver, group_name, error_message):
@@ -171,73 +187,75 @@ def process_region_recognize():
 
     def processAI(input_ai):
         file_path = "basic rules.txt"
-        file_path_1 = "training_chat.txt"
+        # file_path_1 = "training_chat.txt"
         with open(file_path, "r") as file:
             file_content = file.read()
-        with open(file_path_1, "r") as file:
-            file_content_1 = file.read()
+        # with open(file_path_1, "r") as file:
+        #     file_content_1 = file.read()
         Q = "mpt 8579=2 9058=3 st 7676.3 8787.4 3621.8.6.3"
-        Z = "E\n7765  .3 .3 .3 iBox\nH E\n3453 .3\n1143 .3"
+        # Z = "E\n7765  .3 .3 .3 iBox\nH E\n3453 .3\n1143 .3"
         response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",  # or "gpt-3.5-turbo"
-            # model="ft:gpt-4o-mini-2024-07-18:abunene::AiFZsnhU",
+            model="ft:gpt-4o-2024-08-06:abunene::AkNqx79Y",
             messages=[
                 {"role": "system", "content": "Your job is to convert the user input based on knowledge uploaded"},
-                {"role": "user",
-                 "content": f"Here is the rules \n\n{file_content}\n\n and \n\n{file_content_1}\n\n that you "
-                            f"need to understand, Please"
-                            f"look out the region make sure the region is compatible with the number. Now"
-                            f"answer this: {Q}"},
+                {"role": "user", "content": f"Here is the rules \n\n{file_content}\n\n that you "
+                                            f"need to understand, Please"
+                                            f"look out the region make sure the region is compatible with the number. Now"
+                                            f"answer this: {Q}"},
                 {"role": "assistant", "content": "D\n#123\n8579#2\n9058#3\n#43\n7676#3\n8787#4\n3621#8#6#3"},
-                {"role": "user",
-                 "content": f"Here is the rules \n\n{file_content}\n\n and \n\n{file_content_1}\n\n that you "
-                            f"need to understand, Please"
-                            f"look out the region make sure the region is compatible with the number. Now"
-                            f"answer this: {Z}"},
-                {"role": "assistant", "content": "D\n#89\n**7765#3#3#3\n#1\n3454#3\n1143#3"},
-                {"role": "user", "content": "Wrong! The answer is D\n#9\n**7765#3#3#3\n#89\n3454#3\n1143#3"},
-                {"role": "assistant", "content": "D\n#9\n**7765#3#3#3\n#89\n3454#3\n1143#3"},
                 {"role": "user", "content": f"answer this: {input_ai}"}
             ],
-            temperature=0.5,
+            temperature=0.3,
         )
         return response["choices"][0]["message"]["content"]
-
     while True:
         with open("filtered_group_chat_log.txt", "r", encoding="utf-8") as input_file:
             lines = input_file.readlines()
 
-        # Use the new function to group receipts
-        grouped_receipts = combine_receipt_lines(lines)
-
-        for receipt_message in grouped_receipts:
-            if is_valid_input(receipt_message):  # Process valid inputs
-                if receipt_message not in combined_messages:
-                    combined_messages.append(receipt_message)
-                    ai_message = processAI(receipt_message)
+        for i, line in enumerate(lines):
+            if is_valid_input(line):  # If line contains region mapping
+                complete_message = line.strip()
+                if complete_message not in combined_messages:
+                    combined_messages.append(complete_message)
+                    ai_message = processAI(complete_message)
                     print(ai_message)
                     if ai_message != "False":
+
+                        # Write the complete message to RegionRecognize.txt
                         try:
+                            print("Start Writing to website....")
                             python_executable = r"C:\Users\weilun\PycharmProjects\toto_project\.venv\Scripts\python"
                             result = subprocess.run(
-                                [python_executable, "main.py", ai_message],
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                text=True,
-                                check=True
+                                [python_executable, "main.py", ai_message],  # Pass the command and arguments as a list
+                                stdout=subprocess.PIPE,  # Capture standard output
+                                stderr=subprocess.PIPE,  # Capture standard error
+                                text=True,  # Decode output as text (str)
+                                check=True  # Raise CalledProcessError on non-zero exit try again
                             )
                             finish_write = result.stdout.strip()
                             print(finish_write)
-                            send_error_message(driver, group_name, f"(Order Receipt: \n) {finish_write} ")
+
                             with open("RegionRecognize.txt", "a", encoding="utf-8") as output_file:
                                 output_file.write(f"{finish_write}\n")
+
+                            # Format the full receipt message for WhatsApp
+                            full_message = finish_write.replace("\n", "\n")
+                            print(f"the result going to print :{full_message}")
+                            send_sucessful_message(driver, group_name, full_message)
+
+
                         except subprocess.CalledProcessError as e:
                             print("An error occurred:")
                             print(e.stderr)
+
                     else:
+
                         send_error_message(driver, group_name, f"{ai_message} (Order Receipt)")
+                        pass
+                        #need to reply to group
+                    # subprocess.run('pytest', '')
             else:
-                error_input = receipt_message.strip()
+                error_input = line.strip()
                 if error_input not in invalid_input:
                     invalid_input.append(error_input)
                     print("Not valid input detected:", error_input)
@@ -251,13 +269,18 @@ def clear_region_recognize_file_once():
     try:
         with open("RegionRecognize.txt", "w", encoding="utf-8") as file:
             file.write("")
-        print("RegionRecognize.txt has been cleared once.")
+        with open("filtered_group_chat_log.txt", "w", encoding="utf-8") as file:
+            file.write("")
+        with open("group_chat_log.txt", "w", encoding="utf-8") as file:
+            file.write("")
+        print("All text file has been cleared once.")
     except Exception as e:
         print(f"Error clearing RegionRecognize.txt: {e}")
 
 
 # Wrapper function to ensure all other functions run once before clearing RegionRecognize.txt
 def initialize_functions_with_clear():
+    # Clear RegionRecognize.txt once
     threads = []
 
     # Start monitor_messages, filter_chat_log, and process_region_recognize as threads
@@ -271,8 +294,7 @@ def initialize_functions_with_clear():
     # Wait for all threads to run once
     time.sleep(10)  # Adjust this delay as needed to ensure all threads initialize and run their first iteration
 
-    # Clear RegionRecognize.txt once
-    # clear_region_recognize_file_once()
+
 
     # Keep threads running
     try:
@@ -284,4 +306,5 @@ def initialize_functions_with_clear():
 
 # Run the initialization process
 if __name__ == "__main__":
+    clear_region_recognize_file_once()
     initialize_functions_with_clear()

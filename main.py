@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import gc
 
+
 class CustomChrome(uc.Chrome):
     def __del__(self):
         try:
@@ -15,9 +16,11 @@ class CustomChrome(uc.Chrome):
         except OSError:
             pass
 
+
 def setup_driver():
     """Initialize and return the custom undetected-chromedriver instance."""
     return CustomChrome()
+
 
 def fetch_session_and_token():
     """Fetch sessionID and tokenCode via API."""
@@ -28,7 +31,7 @@ def fetch_session_and_token():
         "apiUser": "a9966",
         "apiPass": "U6N5eg",
         "user": "3836",
-        "pass": "996688"
+        "pass": "009966"
     }
 
     response = requests.get(base_url + endpoint, params=params)
@@ -40,6 +43,7 @@ def fetch_session_and_token():
     else:
         print(f"Error: Received status code {response.status_code}")
         return None, None
+
 
 def perform_actions(inputtoto, session_id, token_code):
     """Perform actions on the webpage using the provided session and input."""
@@ -72,6 +76,7 @@ def perform_actions(inputtoto, session_id, token_code):
         print(f"Error during test execution: {e}")
         return None
 
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Please use the correct way: python main.py 'inputstr'")
@@ -95,7 +100,7 @@ if __name__ == "__main__":
 
     # Output receipt_text to be captured by another script
     if receipt_text:
-        print("Receipt: "+ receipt_text)
+        print("Receipt: " + receipt_text)
         sys.exit(0)
     else:
         print("ERROR")

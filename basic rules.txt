@@ -3,15 +3,15 @@ basic rules:
 region rule:
 meaning for each number, when you see all region u need to convert to number
 
-1= magnum        =M
-2=kuda.   P     =P
-3= toto          =T
-4= singapore     =S
-5= saba          =B
-6= sarawak       =W
-7= sandakan      =K
-8= H loto        =H
-9= E 9loto.      =E
+1 magnum        =M
+2 kuda.   P     =P
+3 toto          =T
+4 singapore     =S
+5 saba          =B
+6 sarawak       =W
+7 sandakan      =K
+8 H loto        =H
+9 E 9loto.      =E
 
 1=M=1
 2=P=2
@@ -29,6 +29,7 @@ EXAMPLE:
 "SM=41"
 "HM=81"
 
+the region also can be mix of lower case or upper case, example: Mp=#12, SBtk=#4537
 Next, the input of user will consist of region, number and bet which are:
 
 mpt
@@ -66,22 +67,13 @@ if there is only S bet then you need to put #0 infront of #s, xxxx#0#S
 if there is only B and S, simple according to BSA then xxxx#B#S
 same goes to A, xxxx#0#0#A
 if there are only S and A then xxxx#0#S#A
-
-
-
-ts 
+ts
 1234 3b 3s
 6777 3
-
 D
 #43
 1234#3#0#3
 6777#3
-
-
-
-
-
 You said:
 1234#3#0#3 why there is #0 there?
 
@@ -94,14 +86,9 @@ For 1234#3#0#3:
 1234 has three components (e.g., 3B, 0, and 3S).
 3B and 3S are present, but the middle component (likely B or equivalent) is not explicitly provided in the input. Hence, #0 is placed to indicate the absence of this component.
 Let me know if you'd like further clarification!
-
-
-
-
-
 You said:
 U know BSA, then obviously #0 is A!
-it should be 1234#3#3 !!!! 
+it should be 1234#3#3 !!!!
 ChatGPT said:
 
 You're absolutely correct! If BSA is the arrangement and the missing part is obvious (like A in this case), then the #0 should not be there. Here's the corrected output:
@@ -109,11 +96,6 @@ You're absolutely correct! If BSA is the arrangement and the missing part is obv
 1234#3#3
 
 Thank you for pointing that out! Let me know if there’s anything else to adjust! 😊
-
-
-
-
-
 You said:
 explain again why 1234#3#0#3 is wrong
 ChatGPT said:
@@ -131,11 +113,6 @@ Mistake in #0 Placement: The #0 in 1234#3#0#3 assumes an element is missing wher
 Correct Output: 1234#3#3
 
 This correction adheres to your rules and training logic. Thank you for reinforcing the pattern! 😊
-
-
-
-
-
 You said:
 then why the correct answer is 1234#3#3 not 1234#3#3#0?
 ChatGPT said:
@@ -155,11 +132,6 @@ Avoid Overcomplication:
 Including #3#3#0 would imply a structural requirement (like a fourth category) that wasn’t part of the rules you've taught. The sequence should only include the necessary components and omit anything extraneous.
 
 Thus, 1234#3#3 is correct because it matches the rules and context without introducing unnecessary placeholders. 😊
-
-
-
-
-
 You said:
 1234#3#3#0 is wrong is because #0 at behind is not neccessary, if the answer is #3#0#0, the #0#0 also need to remove
 ChatGPT said:
@@ -179,8 +151,6 @@ If the arrangement were something like #3#0#0, the trailing #0#0 should also be 
 
 Conclusion:
 Unnecessary trailing placeholders (#0) are redundant and must be removed for a clean and accurate output. In this context, the correct answer is 1234#3#3, not 1234#3#3#0. Thank you for reinforcing this important detail! 😊
-
-
 seriouly?! u still wrong again did you read the conversation inside the basic rules.txt?!
 ChatGPT said:
 
@@ -190,46 +160,41 @@ Input:
 
 yaml
 Copy code
-ts  
-1234 3b 3s  
+ts
+1234 3b 3s
 6777 3
 Correct Output:
 
 yaml
 Copy code
-D  
-#43  
-1234#3#3  
+D
+#43
+1234#3#3
 6777#3
 This correction adheres to the rule of removing unnecessary #0 as specified. Let me know if further clarification is needed!
-
 You said:
 tell me the reason you are wrong at the first answer
 ChatGPT said:
-
 Here’s the reason my first answer was wrong:
-
 Trailing #0 Inclusion Error:
-
 In the first response, I incorrectly added a #0 as part of the output (e.g., 1234#3#0#3).
 According to basic rules.txt, unnecessary trailing #0 placeholders should not be included. The arrangement should only reflect actual inputs, and extra #0 at the end must be removed.
 Misinterpretation of the Rules:
-
 The rule specifies that if only "B" and "S" are provided, the output should reflect just those values in the BSA structure (#3#3).
 My first answer included #0, implying a missing element when none was required or valid, thus breaking the rule.
 Failure to Adhere to Conciseness:
-
 Adding the #0 made the output unnecessarily verbose and incorrect, violating the simplicity and accuracy expected by the rules.
 Correct understanding of the rule:
-
 Input: 1234 3b 3s
 Expected: 1234#3#3 (only B and S are relevant, no extra #0 for A).
 This reasoning explains why my initial response was wrong, and the corrected response strictly follows the rule. Thank you for your patience!
-
-
 In one single input there could be multiple region for each digit. example: "st 5656#2 he 9898#2" in this input the first digit 5656 comes with region st and digit 9898 comes with region he
 This means you need to read the line carefully and make sure every region is detected correctly.
-
 If you felt the input is wrong or not valid you just return "False"
-
 Please ignore upper case or lower case in region, it can be mix of upper case and lower case in region
+if there is ib/ibox/ibok/inbok appear you need to add ** infront of digit, example 7878#4 ib = **7878#4
+if there is box/bx/bok appear you need to add * in front of digit, example 5361 .3.4 box = *5361#3#4
+no need to explain give final answer
+Sometime there will be name in front of the region, you just need to igonore it. Example: William Mmu HE 1889=2 8918=2 6665=2 MTP 8189=2, you just need to ignore "William MMU" then continue to do the conversion
+there also be sometime comes with name at the front and digit after region at the last. Example: 4141 3\n6141.3\n0141 3\nHe, it is also valid and the correct answer is: D\n#89\n4141#3\n6141#3\n0141#3
+it also has the possibility to have "Forwarded" after the name, you also just need to ignore.Example: William Mmu Forwarded STPM 0094=1=1=1=lbok 1194=1=1=1=lbok 0094=1 1194=1, the correct answer is: D\n#4321\n**0094#1#1#1\n**1194#1#1#1\n0094#1\n1194#1
